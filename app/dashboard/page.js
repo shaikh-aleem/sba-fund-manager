@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import BottomNav from '@/app/components/BottomNav';
+import StatCard from '@/app/components/StatCard';
+import TransactionItem from '@/app/components/TransactionItem';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -45,139 +48,238 @@ export default function Dashboard() {
 
   const totalPaid = myContributions.reduce((s, c) => s + Number(c.amount || 0), 0);
   const activeLoan = myLoans.find(l => l.status === 'active');
+  const reserve = Math.round(totalPaid * 0.1);
+  const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+
+  // Recent contributions (top 3)
+  const recentContributions = myContributions.slice(0, 3);
 
   return (
     <>
+      {/* HEADER */}
       <header className="header">
         <div className="logo">
           <div className="logo-icon">SBA</div>
-          <h1>Dashboard</h1>
+          <div className="logo-text">
+            <div className="logo-title">SBA Fund</div>
+            <div className="logo-subtitle">Sharia Brotherhood Aurangabad</div>
+          </div>
         </div>
         <div className="nav-links">
-          {(user.role === 'admin' || user.role === 'super_admin') && (
-            <a href="/admin">Admin Panel</a>
-          )}
+          {isAdmin && <a href="/admin">Admin Panel</a>}
+          <a href="/change-password">Change Password</a>
           <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
         </div>
       </header>
 
-      <div className="container" style={{ paddingTop: '24px' }}>
-        <div className="card">
-          <h2 style={{ color: 'var(--primary)', marginBottom: '4px' }}>
-            Assalamu Alaikum, {user.full_name}
-          </h2>
-          <p style={{ color: 'var(--text-light)', fontSize: '14px' }}>
-            Member Code: <strong>{user.member_code}</strong> • Mobile: {user.mobile}
-          </p>
+      <div className="container" style={{ paddingTop: '20px' }}>
+        {/* WELCOME */}
+        <div style={{ marginBottom: '20px' }}>
+          <div style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '2px' }}>
+            Assalamu Alaikum
+          </div>
+          <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', letterSpacing: '-0.5px' }}>
+            {user.full_name}
+          </h1>
+          <div style={{ fontSize: '13px', color: 'var(--text-light)', marginTop: '4px' }}>
+            <span className="badge badge-primary" style={{ marginRight: '6px' }}>{user.member_code}</span>
+            {isAdmin && <span className="badge badge-gold">{user.role === 'super_admin' ? 'Super Admin' : 'Admin'}</span>}
+          </div>
         </div>
 
-        <h3 style={{ marginBottom: '12px', color: 'var(--primary)' }}>Your Account</h3>
-        <div className="grid grid-3">
-          <div className="stat-card">
-            <div className="stat-label">Total Contributed</div>
-            <div className="stat-value">₹{totalPaid.toLocaleString('en-IN')}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Monthly Due</div>
-            <div className="stat-value">₹500</div>
-          </div>
-          <div className="stat-card" style={{ borderLeftColor: activeLoan ? 'var(--warning)' : 'var(--success)' }}>
-            <div className="stat-label">Loan Status</div>
-            <div className="stat-value" style={{ fontSize: '18px' }}>
-              {activeLoan ? `₹${Number(activeLoan.outstanding).toLocaleString('en-IN')} due` : 'No active loan'}
+        {/* HERO — MONTHLY CONTRIBUTION */}
+        <div
+          style={{
+            background: 'var(--primary-gradient)',
+            borderRadius: 'var(--radius-xl)',
+            padding: '24px',
+            color: 'white',
+            marginBottom: '20px',
+            boxShadow: 'var(--shadow-md)',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', position: 'relative', zIndex: 2 }}>
+            <div>
+              <div style={{ fontSize: '12px', opacity: 0.8, fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '6px' }}>
+                Monthly Contribution
+              </div>
+              <div style={{ fontSize: '36px', fontWeight: 800, letterSpacing: '-1px', lineHeight: 1.1 }}>
+                ₹500
+              </div>
+              <div style={{ fontSize: '13px', opacity: 0.85, marginTop: '4px' }}>
+                Small contribution, big support
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '32px', marginBottom: '4px' }}>📅</div>
+              <div style={{ fontSize: '12px', opacity: 0.85, fontWeight: 600 }}>
+                1st – 10th
+              </div>
+              <div style={{ fontSize: '11px', opacity: 0.7 }}>
+                Every month
+              </div>
             </div>
           </div>
-          <div className="nav-links">
-  {(user.role === 'admin' || user.role === 'super_admin') && (
-    <a href="/admin">Admin Panel</a>
-  )}
-  <a href="/change-password">Change Password</a>   {/* ← ADD */}
-  <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
-</div>
-        </div>
-
-        <h3 style={{ margin: '24px 0 12px', color: 'var(--primary)' }}>Fund Overview</h3>
-        <div className="grid grid-3">
-          <div className="stat-card">
-            <div className="stat-label">Total Fund</div>
-            <div className="stat-value">₹{Number(summary?.current_fund_balance || 0).toLocaleString('en-IN')}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Active Members</div>
-            <div className="stat-value">{summary?.total_active_members || 0}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Loans Outstanding</div>
-            <div className="stat-value">₹{Number(summary?.total_outstanding || 0).toLocaleString('en-IN')}</div>
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.15)',
+              borderRadius: 'var(--radius-md)',
+              padding: '12px 16px',
+              fontSize: '13px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              position: 'relative',
+              zIndex: 2,
+            }}
+          >
+            <span>Contact admin to pay your contribution</span>
+            <span style={{ fontSize: '18px' }}>→</span>
           </div>
         </div>
 
-        <div className="card" style={{ marginTop: '24px' }}>
-          <h3 style={{ color: 'var(--primary)', marginBottom: '16px' }}>My Contribution History</h3>
-          {myContributions.length === 0 ? (
-            <p style={{ color: 'var(--text-light)', fontSize: '14px' }}>No contributions recorded yet.</p>
+        {/* YOUR STATS */}
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
+          Your Account
+        </h3>
+        <div className="grid grid-4" style={{ marginBottom: '24px' }}>
+          <StatCard
+            label="Total Paid"
+            value={`₹${totalPaid.toLocaleString('en-IN')}`}
+            sub="Since joining"
+            icon="💰"
+            variant="primary"
+          />
+          <StatCard
+            label="Reserve (10%)"
+            value={`₹${reserve.toLocaleString('en-IN')}`}
+            sub="For member safety"
+            icon="🛡️"
+            variant="gold"
+          />
+          <StatCard
+            label="My Loans"
+            value={activeLoan ? `₹${Number(activeLoan.outstanding).toLocaleString('en-IN')}` : '₹0'}
+            sub={activeLoan ? 'Outstanding' : 'No active loan'}
+            icon="💵"
+            variant={activeLoan ? 'danger' : 'success'}
+          />
+          <StatCard
+            label="Months Paid"
+            value={myContributions.length}
+            sub="Total contributions"
+            icon="📋"
+            variant="success"
+          />
+        </div>
+
+        {/* FUND OVERVIEW */}
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
+          Community Fund
+        </h3>
+        <div className="grid grid-3" style={{ marginBottom: '24px' }}>
+          <StatCard
+            label="Total Fund"
+            value={`₹${Number(summary?.current_fund_balance || 0).toLocaleString('en-IN')}`}
+            sub="Live balance"
+            icon="🏦"
+          />
+          <StatCard
+            label="Active Members"
+            value={summary?.total_active_members || 0}
+            sub="Contributing now"
+            icon="👥"
+          />
+          <StatCard
+            label="Loans Out"
+            value={`₹${Number(summary?.total_outstanding || 0).toLocaleString('en-IN')}`}
+            sub="Being repaid"
+            icon="📊"
+          />
+        </div>
+
+        {/* QUICK ACTIONS */}
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
+          Quick Actions
+        </h3>
+        <div className="grid grid-4" style={{ marginBottom: '24px' }}>
+          <a href="/dashboard#contributions" className="quick-action">
+            <div className="icon">🧾</div>
+            <div>History</div>
+          </a>
+          <a href="/dashboard#loans" className="quick-action">
+            <div className="icon">💵</div>
+            <div>My Loans</div>
+          </a>
+          <a href="/change-password" className="quick-action">
+            <div className="icon">🔑</div>
+            <div>Password</div>
+          </a>
+          {isAdmin && (
+            <a href="/admin" className="quick-action">
+              <div className="icon">⚙️</div>
+              <div>Admin</div>
+            </a>
+          )}
+        </div>
+
+        {/* RECENT CONTRIBUTIONS */}
+        <div className="card" id="contributions">
+          <div className="flex-between mb-md">
+            <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)' }}>
+              Recent Contributions
+            </h3>
+            <span style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 600 }}>
+              {myContributions.length} total
+            </span>
+          </div>
+
+          {recentContributions.length === 0 ? (
+            <p style={{ color: 'var(--text-light)', fontSize: '14px', padding: '20px 0', textAlign: 'center' }}>
+              No contributions yet. Pay your first ₹500 to admin to get started.
+            </p>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Receipt</th>
-                    <th>Month</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Mode</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {myContributions.map(c => (
-                    <tr key={c.id}>
-                      <td>{c.receipt_no || '-'}</td>
-                      <td>{c.month}</td>
-                      <td>₹{Number(c.amount).toLocaleString('en-IN')}</td>
-                      <td>{new Date(c.payment_date).toLocaleDateString('en-IN')}</td>
-                      <td>{c.payment_mode}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div>
+              {recentContributions.map(c => (
+                <TransactionItem
+                  key={c.id}
+                  type="in"
+                  icon="✓"
+                  title="Monthly Contribution"
+                  subtitle={`${c.receipt_no || 'Receipt'} • ${c.month}`}
+                  amount={`+ ₹${Number(c.amount).toLocaleString('en-IN')}`}
+                  date={new Date(c.payment_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                />
+              ))}
             </div>
           )}
         </div>
 
+        {/* LOANS (only if any) */}
         {myLoans.length > 0 && (
-          <div className="card" style={{ marginTop: '24px' }}>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '16px' }}>My Loans</h3>
-            <div style={{ overflowX: 'auto' }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Loan ID</th>
-                    <th>Amount</th>
-                    <th>Outstanding</th>
-                    <th>EMI Paid</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {myLoans.map(l => (
-                    <tr key={l.id}>
-                      <td>{l.loan_code}</td>
-                      <td>₹{Number(l.amount).toLocaleString('en-IN')}</td>
-                      <td>₹{Number(l.outstanding).toLocaleString('en-IN')}</td>
-                      <td>{l.paid_emis}/{l.total_emis}</td>
-                      <td>
-                        <span className={`badge badge-${l.status === 'active' ? 'warning' : 'success'}`}>
-                          {l.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="card" id="loans" style={{ marginTop: '16px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '16px' }}>
+              My Loans
+            </h3>
+            {myLoans.map(l => (
+              <TransactionItem
+                key={l.id}
+                type={l.status === 'active' ? 'out' : 'gold'}
+                icon={l.status === 'active' ? '💵' : '✓'}
+                title={`Loan ${l.loan_code}`}
+                subtitle={`${l.paid_emis}/${l.total_emis} EMIs paid`}
+                amount={`₹${Number(l.outstanding).toLocaleString('en-IN')} left`}
+                date={new Date(l.given_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+              />
+            ))}
           </div>
         )}
       </div>
+
+      {/* MOBILE BOTTOM NAV */}
+      <BottomNav role={user.role} />
     </>
   );
 }
