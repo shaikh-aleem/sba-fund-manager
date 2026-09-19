@@ -226,15 +226,15 @@ export default function MembersList() {
                           </button>
                         )}
 
-                        {m.status === 'active' && m.role === 'member' && (
-                          <>
-                            <button
-                              className="btn btn-secondary"
-                              style={{ padding: '5px 10px', fontSize: '12px' }}
-                              onClick={() => openEdit(m)}
-                            >
-                              ✏️ Edit
-                            </button>
+                        {(m.role === 'member' || user.role === 'super_admin') && (
+  <button
+    className="btn btn-secondary"
+    style={{ padding: '5px 10px', fontSize: '12px', color: '#2563eb', borderColor: '#2563eb' }}
+    onClick={() => openResetPassword(m)}
+  >
+    🔑 Reset PW
+  </button>
+)}
                             <button
                               className="btn btn-secondary"
                               style={{ padding: '5px 10px', fontSize: '12px', color: '#2563eb', borderColor: '#2563eb' }}

@@ -87,6 +87,13 @@ export default function Dashboard() {
               {activeLoan ? `₹${Number(activeLoan.outstanding).toLocaleString('en-IN')} due` : 'No active loan'}
             </div>
           </div>
+          <div className="nav-links">
+  {(user.role === 'admin' || user.role === 'super_admin') && (
+    <a href="/admin">Admin Panel</a>
+  )}
+  <a href="/change-password">Change Password</a>   {/* ← ADD */}
+  <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
+</div>
         </div>
 
         <h3 style={{ margin: '24px 0 12px', color: 'var(--primary)' }}>Fund Overview</h3>

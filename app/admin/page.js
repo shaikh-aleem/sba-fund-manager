@@ -58,12 +58,13 @@ export default function AdminHome() {
           <h1>Admin Panel</h1>
         </div>
         <div className="nav-links">
-          <a href="/dashboard">My Dashboard</a>
-          <a href="/admin/members">Members</a>
-          <a href="/admin/collect">Collect</a>
-          <a href="/admin/loans">Loans</a>
-          <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
-        </div>
+  <a href="/dashboard">My Dashboard</a>
+  <a href="/admin/members">Members</a>
+  <a href="/admin/collect">Collect</a>
+  <a href="/admin/loans">Loans</a>
+  <a href="/change-password">Change PW</a>   {/* ← ADD */}
+  <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
+</div>
       </header>
 
       <div className="container" style={{ paddingTop: '24px' }}>
