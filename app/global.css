@@ -709,3 +709,100 @@ table tr:last-child td { border-bottom: none; }
 .flex-center { display: flex; align-items: center; }
 .gap-sm { gap: 8px; }
 .gap-md { gap: 16px; }
+
+/* ---------- STAT CARD v2 (New Component) ---------- */
+.stat-card-new {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 110px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card-new:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.stat-label-new {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.stat-value-new {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.stat-sub-new {
+  font-size: 12px;
+  color: var(--text-light);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Variants */
+.stat-card-new.primary {
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+}
+.stat-card-new.primary .stat-label-new { color: rgba(255,255,255,0.8); }
+.stat-card-new.primary .stat-value-new { color: white; }
+.stat-card-new.primary .stat-sub-new { color: rgba(255,255,255,0.75); }
+
+.stat-card-new.gold {
+  background: linear-gradient(135deg, #c9a227 0%, #e5c55a 100%);
+  border: none;
+}
+.stat-card-new.gold .stat-label-new { color: rgba(13,40,24,0.7); }
+.stat-card-new.gold .stat-value-new { color: var(--primary-dark); }
+.stat-card-new.gold .stat-sub-new { color: rgba(13,40,24,0.7); }
+
+.stat-card-new.success {
+  border-left: 4px solid var(--success);
+}
+
+.stat-card-new.danger {
+  border-left: 4px solid var(--danger);
+}
+
+.stat-card-new.compact {
+  min-height: 90px;
+  padding: 14px;
+}
+
+.stat-card-new.compact .stat-value-new {
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .stat-card-new {
+    padding: 14px;
+    min-height: 100px;
+    border-radius: var(--radius-md);
+  }
+  .stat-value-new { font-size: 20px; }
+  .stat-label-new { font-size: 11px; }
+  .stat-icon { font-size: 20px; }
+}
