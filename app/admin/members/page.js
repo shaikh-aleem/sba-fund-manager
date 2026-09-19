@@ -17,6 +17,10 @@ export default function MembersList() {
   const [editing, setEditing] = useState(null);
   const [editForm, setEditForm] = useState({ full_name: '', mobile: '', email: '', address: '' });
 
+  // Reset password modal
+  const [resetting, setResetting] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+
   useEffect(() => {
     const stored = localStorage.getItem('sba_user');
     if (!stored) { router.push('/login'); return; }
@@ -37,17 +41,12 @@ export default function MembersList() {
 
   const showMsg = (type, text) => {
     setMsg({ type, text });
-    setTimeout(() => setMsg({ type: '', text: '' }), 4000);
+    setTimeout(() => setMsg({ type: '', text: '' }), 5000);
   };
-
-  // ---- ACTIONS ----
 
   const deactivateMember = async (id, name) => {
     if (!confirm(`Deactivate ${name}? They won't be able to login.`)) return;
-    const { error } = await supabase
-      .from('members')
-      .update({ status: 'inactive' })
-      .eq('id', id);
+    const { error } = await supabase.from('members').update({ status: 'inactive' }).eq('id', id);
     if (error) return showMsg('error', 'Failed: ' + error.message);
     showMsg('success', `✅ ${name} deactivated`);
     loadMembers();
@@ -55,10 +54,7 @@ export default function MembersList() {
 
   const reactivateMember = async (id, name) => {
     if (!confirm(`Reactivate ${name}?`)) return;
-    const { error } = await supabase
-      .from('members')
-      .update({ status: 'active' })
-      .eq('id', id);
+    const { error } = await supabase.from('members').update({ status: 'active' }).eq('id', id);
     if (error) return showMsg('error', 'Failed: ' + error.message);
     showMsg('success', `✅ ${name} reactivated`);
     loadMembers();
@@ -70,7 +66,6 @@ export default function MembersList() {
     }
     if (!confirm(`⚠️ PERMANENTLY DELETE ${name}?\n\nThis will remove ALL their contributions, loans, and EMI records.\n\nThis CANNOT be undone.`)) return;
     if (!confirm(`Are you absolutely sure? Last chance.`)) return;
-
     const { error } = await supabase.from('members').delete().eq('id', id);
     if (error) return showMsg('error', 'Failed: ' + error.message);
     showMsg('success', `🗑️ ${name} permanently deleted`);
@@ -106,7 +101,41 @@ export default function MembersList() {
     loadMembers();
   };
 
-  // ---- FILTERING ----
+  // ---- RESET PASSWORD ----
+  const openResetPassword = (m) => {
+    setResetting(m);
+    // Generate a random temp password like "sba@4821"
+    const random = Math.floor(1000 + Math.random() * 9000);
+    setNewPassword(`sba@${random}`);
+  };
+
+  const confirmResetPassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      return showMsg('error', 'Password must be at least 6 characters');
+    }
+
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          member_id: resetting.id,
+          new_password: newPassword,
+          performed_by: user.id,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Reset failed');
+
+      showMsg('success', `🔑 Password reset for ${resetting.full_name}. New password: ${newPassword}`);
+      setResetting(null);
+      setNewPassword('');
+    } catch (err) {
+      showMsg('error', 'Failed: ' + err.message);
+    }
+  };
+
   const filtered = members.filter(m => {
     const matchesSearch =
       m.full_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -187,7 +216,6 @@ export default function MembersList() {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                        {/* Pending → Approve */}
                         {m.status === 'pending' && (
                           <button
                             className="btn btn-primary"
@@ -198,7 +226,6 @@ export default function MembersList() {
                           </button>
                         )}
 
-                        {/* Active → Deactivate + Edit */}
                         {m.status === 'active' && m.role === 'member' && (
                           <>
                             <button
@@ -210,6 +237,13 @@ export default function MembersList() {
                             </button>
                             <button
                               className="btn btn-secondary"
+                              style={{ padding: '5px 10px', fontSize: '12px', color: '#2563eb', borderColor: '#2563eb' }}
+                              onClick={() => openResetPassword(m)}
+                            >
+                              🔑 Reset PW
+                            </button>
+                            <button
+                              className="btn btn-secondary"
                               style={{ padding: '5px 10px', fontSize: '12px', color: 'var(--warning)', borderColor: 'var(--warning)' }}
                               onClick={() => deactivateMember(m.id, m.full_name)}
                             >
@@ -218,7 +252,6 @@ export default function MembersList() {
                           </>
                         )}
 
-                        {/* Inactive/Rejected → Reactivate + Delete */}
                         {(m.status === 'inactive' || m.status === 'rejected') && m.role === 'member' && (
                           <>
                             <button
@@ -296,6 +329,47 @@ export default function MembersList() {
                 Save Changes
               </button>
               <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setEditing(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RESET PASSWORD MODAL */}
+      {resetting && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px', zIndex: 1000,
+        }}>
+          <div className="card" style={{ maxWidth: '480px', width: '100%' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '8px' }}>
+              🔑 Reset Password
+            </h3>
+            <p style={{ color: 'var(--text-light)', fontSize: '14px', marginBottom: '20px' }}>
+              For <strong>{resetting.full_name}</strong> ({resetting.member_code})
+            </p>
+
+            <div className="alert alert-info" style={{ fontSize: '13px' }}>
+              💡 A temporary password has been generated below. Share it with the member via phone/WhatsApp. They should change it after first login.
+            </div>
+
+            <div className="form-group">
+              <label className="label">New Password</label>
+              <input
+                className="input"
+                type="text"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={confirmResetPassword}>
+                Reset Password
+              </button>
+              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setResetting(null)}>
                 Cancel
               </button>
             </div>
