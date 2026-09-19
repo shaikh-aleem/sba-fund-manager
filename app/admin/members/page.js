@@ -9,7 +9,13 @@ export default function MembersList() {
   const [user, setUser] = useState(null);
   const [members, setMembers] = useState([]);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState({ type: '', text: '' });
+
+  // Edit modal
+  const [editing, setEditing] = useState(null);
+  const [editForm, setEditForm] = useState({ full_name: '', mobile: '', email: '', address: '' });
 
   useEffect(() => {
     const stored = localStorage.getItem('sba_user');
@@ -29,11 +35,86 @@ export default function MembersList() {
     setLoading(false);
   };
 
-  const filtered = members.filter(m =>
-    m.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    m.mobile?.includes(search) ||
-    m.member_code?.toLowerCase().includes(search.toLowerCase())
-  );
+  const showMsg = (type, text) => {
+    setMsg({ type, text });
+    setTimeout(() => setMsg({ type: '', text: '' }), 4000);
+  };
+
+  // ---- ACTIONS ----
+
+  const deactivateMember = async (id, name) => {
+    if (!confirm(`Deactivate ${name}? They won't be able to login.`)) return;
+    const { error } = await supabase
+      .from('members')
+      .update({ status: 'inactive' })
+      .eq('id', id);
+    if (error) return showMsg('error', 'Failed: ' + error.message);
+    showMsg('success', `✅ ${name} deactivated`);
+    loadMembers();
+  };
+
+  const reactivateMember = async (id, name) => {
+    if (!confirm(`Reactivate ${name}?`)) return;
+    const { error } = await supabase
+      .from('members')
+      .update({ status: 'active' })
+      .eq('id', id);
+    if (error) return showMsg('error', 'Failed: ' + error.message);
+    showMsg('success', `✅ ${name} reactivated`);
+    loadMembers();
+  };
+
+  const deleteMember = async (id, name) => {
+    if (user.role !== 'super_admin') {
+      return showMsg('error', '❌ Only Super Admin can permanently delete members');
+    }
+    if (!confirm(`⚠️ PERMANENTLY DELETE ${name}?\n\nThis will remove ALL their contributions, loans, and EMI records.\n\nThis CANNOT be undone.`)) return;
+    if (!confirm(`Are you absolutely sure? Last chance.`)) return;
+
+    const { error } = await supabase.from('members').delete().eq('id', id);
+    if (error) return showMsg('error', 'Failed: ' + error.message);
+    showMsg('success', `🗑️ ${name} permanently deleted`);
+    loadMembers();
+  };
+
+  const openEdit = (m) => {
+    setEditing(m);
+    setEditForm({
+      full_name: m.full_name || '',
+      mobile: m.mobile || '',
+      email: m.email || '',
+      address: m.address || '',
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editForm.full_name || !editForm.mobile) {
+      return showMsg('error', 'Name and mobile are required');
+    }
+    const { error } = await supabase
+      .from('members')
+      .update({
+        full_name: editForm.full_name,
+        mobile: editForm.mobile,
+        email: editForm.email || null,
+        address: editForm.address || null,
+      })
+      .eq('id', editing.id);
+    if (error) return showMsg('error', 'Failed: ' + error.message);
+    showMsg('success', `✅ ${editForm.full_name} updated`);
+    setEditing(null);
+    loadMembers();
+  };
+
+  // ---- FILTERING ----
+  const filtered = members.filter(m => {
+    const matchesSearch =
+      m.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      m.mobile?.includes(search) ||
+      m.member_code?.toLowerCase().includes(search.toLowerCase());
+    const matchesFilter = filter === 'all' || m.status === filter;
+    return matchesSearch && matchesFilter;
+  });
 
   if (loading) return <div className="center">Loading...</div>;
   if (!user) return null;
@@ -51,14 +132,30 @@ export default function MembersList() {
       </header>
 
       <div className="container" style={{ paddingTop: '24px' }}>
+        {msg.text && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
+
         <div className="card">
-          <input
-            className="input"
-            placeholder="🔍 Search by name, mobile, or member code..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{ marginBottom: '20px' }}
-          />
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
+            <input
+              className="input"
+              placeholder="🔍 Search name, mobile, or code..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ flex: '1 1 300px' }}
+            />
+            <select
+              className="input"
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+              style={{ flex: '0 0 180px' }}
+            >
+              <option value="all">All Members</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="inactive">Inactive</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
 
           <div style={{ overflowX: 'auto' }}>
             <table>
@@ -69,7 +166,7 @@ export default function MembersList() {
                   <th>Mobile</th>
                   <th>Role</th>
                   <th>Status</th>
-                  <th>Joined</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -88,17 +185,123 @@ export default function MembersList() {
                         {m.status}
                       </span>
                     </td>
-                    <td>{m.joining_date ? new Date(m.joining_date).toLocaleDateString('en-IN') : '-'}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {/* Pending → Approve */}
+                        {m.status === 'pending' && (
+                          <button
+                            className="btn btn-primary"
+                            style={{ padding: '5px 10px', fontSize: '12px' }}
+                            onClick={() => reactivateMember(m.id, m.full_name)}
+                          >
+                            Approve
+                          </button>
+                        )}
+
+                        {/* Active → Deactivate + Edit */}
+                        {m.status === 'active' && m.role === 'member' && (
+                          <>
+                            <button
+                              className="btn btn-secondary"
+                              style={{ padding: '5px 10px', fontSize: '12px' }}
+                              onClick={() => openEdit(m)}
+                            >
+                              ✏️ Edit
+                            </button>
+                            <button
+                              className="btn btn-secondary"
+                              style={{ padding: '5px 10px', fontSize: '12px', color: 'var(--warning)', borderColor: 'var(--warning)' }}
+                              onClick={() => deactivateMember(m.id, m.full_name)}
+                            >
+                              Deactivate
+                            </button>
+                          </>
+                        )}
+
+                        {/* Inactive/Rejected → Reactivate + Delete */}
+                        {(m.status === 'inactive' || m.status === 'rejected') && m.role === 'member' && (
+                          <>
+                            <button
+                              className="btn btn-secondary"
+                              style={{ padding: '5px 10px', fontSize: '12px', color: 'var(--success)', borderColor: 'var(--success)' }}
+                              onClick={() => reactivateMember(m.id, m.full_name)}
+                            >
+                              Reactivate
+                            </button>
+                            {user.role === 'super_admin' && (
+                              <button
+                                className="btn btn-secondary"
+                                style={{ padding: '5px 10px', fontSize: '12px', color: 'var(--danger)', borderColor: 'var(--danger)' }}
+                                onClick={() => deleteMember(m.id, m.full_name)}
+                              >
+                                🗑️ Delete
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <p style={{ marginTop: '16px', fontSize: '13px', color: 'var(--text-light)' }}>
-            Total: {filtered.length} members
+            Showing {filtered.length} of {members.length} members
           </p>
         </div>
       </div>
+
+      {/* EDIT MODAL */}
+      {editing && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px', zIndex: 1000,
+        }}>
+          <div className="card" style={{ maxWidth: '500px', width: '100%' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>
+              Edit Member — {editing.member_code}
+            </h3>
+            <div className="form-group">
+              <label className="label">Full Name</label>
+              <input className="input" type="text"
+                value={editForm.full_name}
+                onChange={e => setEditForm({ ...editForm, full_name: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="label">Mobile</label>
+              <input className="input" type="tel"
+                value={editForm.mobile}
+                onChange={e => setEditForm({ ...editForm, mobile: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="label">Email (optional)</label>
+              <input className="input" type="email"
+                value={editForm.email}
+                onChange={e => setEditForm({ ...editForm, email: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="label">Address (optional)</label>
+              <input className="input" type="text"
+                value={editForm.address}
+                onChange={e => setEditForm({ ...editForm, address: e.target.value })}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={saveEdit}>
+                Save Changes
+              </button>
+              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setEditing(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
