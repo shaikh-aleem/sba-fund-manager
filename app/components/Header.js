@@ -14,6 +14,7 @@ export default function Header({ user, showNav = false }) {
         { href: '/admin/members', label: 'Members' },
         { href: '/admin/collect', label: 'Collect' },
         { href: '/admin/loans', label: 'Loans' },
+        { href: '/admin/contributions', label: 'History' },
         { href: '/dashboard', label: 'Dashboard' },
         { href: '/change-password', label: 'Password' },
       ]
@@ -28,7 +29,6 @@ export default function Header({ user, showNav = false }) {
         <img src="/logo.png" alt="Sharia Brotherhood Aurangabad" />
       </a>
 
-      {/* Desktop nav */}
       {showNav && (
         <nav className="app-header-nav">
           {navLinks.map(link => (
@@ -42,7 +42,6 @@ export default function Header({ user, showNav = false }) {
         </nav>
       )}
 
-      {/* Mobile logout button (only shown on mobile when user is logged in) */}
       {user && (
         <button
           onClick={handleLogout}

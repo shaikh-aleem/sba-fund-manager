@@ -91,7 +91,6 @@ export default function AdminHome() {
       <Header user={user} showNav={true} />
 
       <div className="container" style={{ paddingTop: '20px' }}>
-        {/* WELCOME */}
         <div style={{ marginBottom: '20px' }}>
           <div style={{ fontSize: '13px', color: 'var(--text-light)', marginBottom: '2px' }}>
             Welcome back
@@ -106,7 +105,6 @@ export default function AdminHome() {
           </div>
         </div>
 
-        {/* HERO — TOTAL FUND */}
         <div
           style={{
             background: 'var(--primary-gradient)',
@@ -142,7 +140,6 @@ export default function AdminHome() {
           </div>
         </div>
 
-        {/* STATS GRID */}
         <div className="grid grid-4" style={{ marginBottom: '20px' }}>
           <StatCard
             label="Reserve (10%)"
@@ -177,7 +174,6 @@ export default function AdminHome() {
           />
         </div>
 
-        {/* COLLECTION WINDOW BANNER */}
         <div
           style={{
             background: 'var(--gold-soft)',
@@ -208,7 +204,6 @@ export default function AdminHome() {
           </a>
         </div>
 
-        {/* QUICK ACTIONS */}
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
           Quick Actions
         </h3>
@@ -225,13 +220,12 @@ export default function AdminHome() {
             <div className="icon">👥</div>
             <div>Members</div>
           </a>
-          <a href="/dashboard" className="quick-action">
-            <div className="icon">📊</div>
-            <div>Reports</div>
+          <a href="/admin/contributions" className="quick-action">
+            <div className="icon">📜</div>
+            <div>History</div>
           </a>
         </div>
 
-        {/* PENDING APPROVALS */}
         {pending.length > 0 && (
           <div className="card" style={{ marginBottom: '16px', borderLeft: '4px solid var(--warning)' }}>
             <div className="flex-between mb-md">
@@ -273,13 +267,12 @@ export default function AdminHome() {
           </div>
         )}
 
-        {/* RECENT TRANSACTIONS */}
         <div className="card">
           <div className="flex-between mb-md">
             <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)' }}>
               Recent Transactions
             </h3>
-            <a href="/admin/members" style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+            <a href="/admin/contributions" style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
               View All →
             </a>
           </div>
@@ -306,7 +299,6 @@ export default function AdminHome() {
         </div>
       </div>
 
-      {/* MOBILE BOTTOM NAV */}
       <BottomNav role={user.role} />
     </>
   );
