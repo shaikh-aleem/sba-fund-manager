@@ -3,13 +3,15 @@
 import Link from 'next/link';
 
 export default function Header({
-  title = 'SBA Fund',
-  subtitle = 'Sharia Brotherhood Aurangabad',
   user,
   showNav = false,
-  currentPath = '',
 }) {
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+
+  const handleLogout = () => {
+    localStorage.removeItem('sba_user');
+    window.location.href = '/';
+  };
 
   const navLinks = isAdmin
     ? [
@@ -17,7 +19,7 @@ export default function Header({
         { href: '/admin/members', label: 'Members' },
         { href: '/admin/collect', label: 'Collect' },
         { href: '/admin/loans', label: 'Loans' },
-        { href: '/dashboard', label: 'My Dashboard' },
+        { href: '/dashboard', label: 'Dashboard' },
         { href: '/change-password', label: 'Password' },
       ]
     : [
@@ -25,54 +27,40 @@ export default function Header({
         { href: '/change-password', label: 'Password' },
       ];
 
-  const handleLogout = () => {
-    localStorage.removeItem('sba_user');
-    window.location.href = '/';
-  };
-
   return (
-    <header className="header">
+    <header className="app-header">
       {/* LOGO */}
-      <Link href={isAdmin ? '/admin' : '/dashboard'} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <div className="logo">
-          {/* Full logo on desktop */}
-          <img
-            src="/logo-full.png"
-            alt="SBA"
-            className="logo-img-full"
-            style={{ height: '40px', width: 'auto', display: 'block' }}
-          />
-          {/* Icon only on mobile */}
-          <img
-            src="/logo-icon.png"
-            alt="SBA"
-            className="logo-img-icon"
-            style={{ height: '36px', width: '36px', display: 'none' }}
-          />
-        </div>
+      <Link
+        href={isAdmin ? '/admin' : '/dashboard'}
+        className="app-header-logo"
+      >
+        {/* Full logo on desktop */}
+        <img
+          src="/logo-full.png"
+          alt="Sharia Brotherhood Aurangabad"
+          className="app-logo-full"
+        />
+        {/* Icon-only on mobile */}
+        <img
+          src="/logo-icon.png"
+          alt="SBA"
+          className="app-logo-icon"
+        />
       </Link>
 
       {/* NAV LINKS (desktop only) */}
       {showNav && (
-        <div className="nav-links">
+        <nav className="app-header-nav">
           {navLinks.map(link => (
-            <a key={link.href} href={link.href}>
+            <a key={link.href} href={link.href} className="app-header-link">
               {link.label}
             </a>
           ))}
-          <a onClick={handleLogout} style={{ cursor: 'pointer' }}>
+          <a onClick={handleLogout} className="app-header-link" style={{ cursor: 'pointer' }}>
             Logout
           </a>
-        </div>
+        </nav>
       )}
-
-      {/* CSS to switch logo based on screen size */}
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .logo-img-full { display: none !important; }
-          .logo-img-icon { display: block !important; }
-        }
-      `}</style>
     </header>
   );
 }

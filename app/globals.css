@@ -109,7 +109,7 @@ button, input, select, textarea {
   }
 }
 
-/* ---------- HEADER ---------- */
+/*---------- HEADER ---------- 
 .header {
   background: var(--primary-gradient);
   color: white;
@@ -181,6 +181,86 @@ button, input, select, textarea {
   .header .logo-title { font-size: 17px; }
   .header .logo-subtitle { font-size: 10px; }
   .nav-links { display: none; } /* hide top nav on mobile, bottom nav instead */
+ 
+
+
+/* ---------- APP HEADER ---------- */
+.app-header {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding-top: calc(12px + env(safe-area-inset-top));
+  gap: 16px;
+  min-height: 60px;
+}
+
+/* Logo wrapper */
+.app-header-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+/* Full logo (desktop) */
+.app-logo-full {
+  height: 44px;
+  width: auto;
+  display: block;
+}
+
+/* Icon logo (mobile) */
+.app-logo-icon {
+  height: 40px;
+  width: 40px;
+  display: none;
+}
+
+/* NAV LINKS (desktop only) */
+.app-header-nav {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.app-header-link {
+  color: white;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.app-header-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 10px 16px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+    min-height: 56px;
+  }
+
+  /* Hide full logo, show icon */
+  .app-logo-full { display: none; }
+  .app-logo-icon { display: block; }
+
+  /* Hide desktop nav on mobile */
+  .app-header-nav { display: none; }
 }
 
 /* ---------- NAV LINKS (Desktop) ---------- */
