@@ -28,6 +28,7 @@ export default function Header({ user, showNav = false }) {
         <img src="/logo.png" alt="Sharia Brotherhood Aurangabad" />
       </a>
 
+      {/* Desktop nav */}
       {showNav && (
         <nav className="app-header-nav">
           {navLinks.map(link => (
@@ -39,6 +40,17 @@ export default function Header({ user, showNav = false }) {
             Logout
           </a>
         </nav>
+      )}
+
+      {/* Mobile logout button (only shown on mobile when user is logged in) */}
+      {user && (
+        <button
+          onClick={handleLogout}
+          className="app-header-logout-mobile"
+          aria-label="Logout"
+        >
+          ⏻
+        </button>
       )}
     </header>
   );
