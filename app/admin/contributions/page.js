@@ -28,11 +28,46 @@ export default function ContributionsHistory() {
   }, []);
 
   const loadContributions = async () => {
-    const { data } = await supabase
+    // Fetch contributions
+    const { data: contribs, error: cErr } = await supabase
       .from('contributions')
-      .select('*, members(full_name, member_code, mobile)')
+      .select('*')
       .order('created_at', { ascending: false });
-    setContributions(data || []);
+
+    if (cErr) {
+      console.error('Contributions fetch error:', cErr);
+      setContributions([]);
+      setLoading(false);
+      return;
+    }
+
+    // Fetch all members
+    const { data: members, error: mErr } = await supabase
+      .from('members')
+      .select('id, full_name, member_code, mobile');
+
+    if (mErr) {
+      console.error('Members fetch error:', mErr);
+      setContributions(contribs || []);
+      setLoading(false);
+      return;
+    }
+
+    // Build lookup map
+    const memberMap = {};
+    (members || []).forEach(m => { memberMap[m.id] = m; });
+
+    // Enrich contributions with member data
+    const enriched = (contribs || []).map(c => ({
+      ...c,
+      members: memberMap[c.member_id] || {
+        full_name: 'Unknown Member',
+        member_code: c.member_id ? c.member_id.slice(0, 8) : 'N/A',
+        mobile: 'N/A',
+      },
+    }));
+
+    setContributions(enriched);
     setLoading(false);
   };
 
@@ -73,7 +108,7 @@ export default function ContributionsHistory() {
       return;
     }
 
-    showMsg('success', `🗑️ Deleted ₹${deleting.amount} contribution from ${deleting.members?.full_name || 'member'}`);
+    showMsg('success', `🗑️ Deleted ₹${deleting.amount} from ${deleting.members?.full_name || 'member'}`);
     setDeleting(null);
     setReason('');
     setConfirming(false);
@@ -121,7 +156,9 @@ export default function ContributionsHistory() {
           </div>
           <div className="stat-card gold">
             <div className="stat-label">Total Amount</div>
-            <div className="stat-value">₹{contributions.reduce((s, c) => s + Number(c.amount || 0), 0).toLocaleString('en-IN')}</div>
+            <div className="stat-value">
+              ₹{contributions.reduce((s, c) => s + Number(c.amount || 0), 0).toLocaleString('en-IN')}
+            </div>
           </div>
         </div>
 
@@ -164,7 +201,7 @@ export default function ContributionsHistory() {
                       {c.members?.full_name || 'Unknown Member'}
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>
-                      {c.members?.member_code} • 📱 {c.members?.mobile}
+                      {c.members?.member_code} {c.members?.mobile && c.members.mobile !== 'N/A' && `• 📱 ${c.members.mobile}`}
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '6px' }}>
                       {c.receipt_no} • {new Date(c.payment_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -199,7 +236,7 @@ export default function ContributionsHistory() {
         )}
       </div>
 
-      {/* DELETE CONFIRMATION MODAL */}
+      {/* DELETE MODAL */}
       {deleting && (
         <div style={{
           position: 'fixed',
@@ -253,7 +290,7 @@ export default function ContributionsHistory() {
 
             {confirming && (
               <div className="alert alert-error" style={{ marginTop: '16px', fontSize: '13px' }}>
-                ⚠️ This will <strong>permanently delete</strong> the contribution and reduce Total Fund by ₹{Number(deleting.amount).toLocaleString('en-IN')}. This cannot be undone.
+                ⚠️ This will <strong>permanently delete</strong> the contribution and reduce Total Fund by ₹{Number(deleting.amount).toLocaleString('en-IN')}. Cannot be undone.
               </div>
             )}
 
