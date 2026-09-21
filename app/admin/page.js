@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import BottomNav from '@/app/components/BottomNav';
 import StatCard from '@/app/components/StatCard';
 import TransactionItem from '@/app/components/TransactionItem';
+import Header from '@/app/components/Header';
 
 export default function AdminHome() {
   const router = useRouter();
@@ -35,7 +36,6 @@ export default function AdminHome() {
     setSummary(sumRes.data);
     setPending(pendRes.data || []);
 
-    // Merge contributions + loans into recent transactions
     const contribTxns = (contribRes.data || []).map(c => ({
       id: `c-${c.id}`,
       type: 'in',
@@ -78,11 +78,6 @@ export default function AdminHome() {
     loadData();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('sba_user');
-    router.push('/');
-  };
-
   if (loading) return <div className="center">Loading...</div>;
   if (!user) return null;
 
@@ -93,23 +88,7 @@ export default function AdminHome() {
 
   return (
     <>
-      <header className="header">
-        <div className="logo">
-          <div className="logo-icon">SBA</div>
-          <div className="logo-text">
-            <div className="logo-title">SBA Fund</div>
-            <div className="logo-subtitle">Admin Panel</div>
-          </div>
-        </div>
-        <div className="nav-links">
-          <a href="/dashboard">My Dashboard</a>
-          <a href="/admin/members">Members</a>
-          <a href="/admin/collect">Collect</a>
-          <a href="/admin/loans">Loans</a>
-          <a href="/change-password">Password</a>
-          <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
-        </div>
-      </header>
+      <Header user={user} showNav={true} />
 
       <div className="container" style={{ paddingTop: '20px' }}>
         {/* WELCOME */}

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import BottomNav from '@/app/components/BottomNav';
+import Header from '@/app/components/Header';
 
 export default function MembersList() {
   const router = useRouter();
@@ -125,7 +126,6 @@ export default function MembersList() {
   if (loading) return <div className="center">Loading...</div>;
   if (!user) return null;
 
-  // Action buttons component
   const ActionButtons = ({ m }) => {
     const isSelf = m.id === user.id;
     const manageable = canManage(m) && !isSelf;
@@ -160,20 +160,7 @@ export default function MembersList() {
 
   return (
     <>
-      {/* HEADER */}
-      <header className="header">
-        <div className="logo">
-          <div className="logo-icon">SBA</div>
-          <div className="logo-text">
-            <div className="logo-title">Members</div>
-            <div className="logo-subtitle">Manage community</div>
-          </div>
-        </div>
-        <div className="nav-links">
-          <a href="/change-password">🔑 Change My Password</a>
-          <a href="/admin">← Admin Home</a>
-        </div>
-      </header>
+      <Header user={user} showNav={true} />
 
       <div className="container" style={{ paddingTop: '20px' }}>
         {msg.text && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
@@ -226,7 +213,7 @@ export default function MembersList() {
             </div>
           ) : (
             <>
-              {/* DESKTOP TABLE (hidden on mobile) */}
+              {/* DESKTOP TABLE */}
               <div className="card desktop-only" style={{ padding: '0', overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
                   <table>
@@ -270,7 +257,7 @@ export default function MembersList() {
                 </div>
               </div>
 
-              {/* MOBILE CARDS (hidden on desktop) */}
+              {/* MOBILE CARDS */}
               <div className="mobile-only" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {filtered.map(m => {
                   const isSelf = m.id === user.id;

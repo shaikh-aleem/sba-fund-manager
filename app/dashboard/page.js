@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import BottomNav from '@/app/components/BottomNav';
 import StatCard from '@/app/components/StatCard';
 import TransactionItem from '@/app/components/TransactionItem';
+import Header from '@/app/components/Header';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -38,11 +39,6 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('sba_user');
-    router.push('/');
-  };
-
   if (loading) return <div className="center">Loading...</div>;
   if (!user) return null;
 
@@ -51,26 +47,11 @@ export default function Dashboard() {
   const reserve = Math.round(totalPaid * 0.1);
   const isAdmin = user.role === 'admin' || user.role === 'super_admin';
 
-  // Recent contributions (top 3)
   const recentContributions = myContributions.slice(0, 3);
 
   return (
     <>
-      {/* HEADER */}
-      <header className="header">
-        <div className="logo">
-          <div className="logo-icon">SBA</div>
-          <div className="logo-text">
-            <div className="logo-title">SBA Fund</div>
-            <div className="logo-subtitle">Sharia Brotherhood Aurangabad</div>
-          </div>
-        </div>
-        <div className="nav-links">
-          {isAdmin && <a href="/admin">Admin Panel</a>}
-          <a href="/change-password">Change Password</a>
-          <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
-        </div>
-      </header>
+      <Header user={user} showNav={true} />
 
       <div className="container" style={{ paddingTop: '20px' }}>
         {/* WELCOME */}
@@ -257,7 +238,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* LOANS (only if any) */}
+        {/* LOANS */}
         {myLoans.length > 0 && (
           <div className="card" id="loans" style={{ marginTop: '16px' }}>
             <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '16px' }}>
@@ -278,7 +259,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* MOBILE BOTTOM NAV */}
       <BottomNav role={user.role} />
     </>
   );
