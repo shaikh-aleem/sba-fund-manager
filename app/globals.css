@@ -806,3 +806,12 @@ table tr:last-child td { border-bottom: none; }
   .stat-label-new { font-size: 11px; }
   .stat-icon { font-size: 20px; }
 }
+
+/* ---------- RESPONSIVE VISIBILITY ---------- */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
