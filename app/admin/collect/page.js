@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import BottomNav from '@/app/components/BottomNav';
+import Header from '@/app/components/Header';
 
 export default function CollectPage() {
   const router = useRouter();
@@ -73,21 +75,13 @@ export default function CollectPage() {
 
   return (
     <>
-      <header className="header">
-        <div className="logo">
-          <div className="logo-icon">SBA</div>
-          <h1>Collect Contribution</h1>
-        </div>
-        <div className="nav-links">
-          <a href="/admin">← Admin Home</a>
-        </div>
-      </header>
+      <Header user={user} showNav={true} />
 
-      <div className="container" style={{ paddingTop: '24px', maxWidth: '800px' }}>
+      <div className="container" style={{ paddingTop: '20px', maxWidth: '800px' }}>
         {msg.text && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
 
         <div className="card">
-          <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>Record New Payment</h3>
+          <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>💰 Record New Payment</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="label">Member *</label>
@@ -182,6 +176,8 @@ export default function CollectPage() {
           )}
         </div>
       </div>
+
+      <BottomNav role={user.role} />
     </>
   );
 }

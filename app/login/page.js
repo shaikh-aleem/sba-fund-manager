@@ -79,15 +79,21 @@ export default function LoginPage() {
   return (
     <div className="center">
       <div className="auth-box">
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <div style={{
-            width: '60px', height: '60px', background: 'var(--primary)',
-            borderRadius: '12px', display: 'inline-flex',
-            alignItems: 'center', justifyContent: 'center',
-            color: 'var(--gold)', fontSize: '22px', fontWeight: '700'
-          }}>SBA</div>
+        {/* LOGO */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <img
+            src="/logo.png"
+            alt="Sharia Brotherhood Aurangabad"
+            style={{
+              height: '90px',
+              width: 'auto',
+              maxWidth: '100%',
+              display: 'inline-block',
+            }}
+          />
         </div>
-        <h1>SBA Fund Manager</h1>
+
+        <h1 style={{ marginBottom: '4px' }}>Welcome Back</h1>
         <p className="subtitle">Interest-Free Community Fund</p>
 
         <div className="tabs">

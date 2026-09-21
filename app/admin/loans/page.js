@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import BottomNav from '@/app/components/BottomNav';
+import Header from '@/app/components/Header';
 
 export default function LoansPage() {
   const router = useRouter();
@@ -132,17 +134,9 @@ export default function LoansPage() {
 
   return (
     <>
-      <header className="header">
-        <div className="logo">
-          <div className="logo-icon">SBA</div>
-          <h1>Loans</h1>
-        </div>
-        <div className="nav-links">
-          <a href="/admin">← Admin Home</a>
-        </div>
-      </header>
+      <Header user={user} showNav={true} />
 
-      <div className="container" style={{ paddingTop: '24px', maxWidth: '900px' }}>
+      <div className="container" style={{ paddingTop: '20px', maxWidth: '900px' }}>
         {msg.text && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
 
         <div className="card" style={{ background: 'linear-gradient(135deg, #0d5c3f, #1a7a55)', color: 'white' }}>
@@ -164,7 +158,7 @@ export default function LoansPage() {
 
         {tab === 'give' && (
           <div className="card">
-            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>New Loan</h3>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>💵 New Loan</h3>
             <form onSubmit={handleGiveLoan}>
               <div className="form-group">
                 <label className="label">Member *</label>
@@ -215,7 +209,7 @@ export default function LoansPage() {
 
         {tab === 'emi' && (
           <div className="card">
-            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>Receive EMI</h3>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>📥 Receive EMI</h3>
             {activeLoans.length === 0 ? (
               <p style={{ color: 'var(--text-light)' }}>No active loans to collect EMI from.</p>
             ) : (
@@ -282,6 +276,8 @@ export default function LoansPage() {
           )}
         </div>
       </div>
+
+      <BottomNav role={user.role} />
     </>
   );
 }

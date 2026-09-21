@@ -1,11 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-
-export default function Header({
-  user,
-  showNav = false,
-}) {
+export default function Header({ user, showNav = false }) {
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   const handleLogout = () => {
@@ -29,26 +24,10 @@ export default function Header({
 
   return (
     <header className="app-header">
-      {/* LOGO */}
-      <Link
-        href={isAdmin ? '/admin' : '/dashboard'}
-        className="app-header-logo"
-      >
-        {/* Full logo on desktop */}
-        <img
-          src="/logo-full.png"
-          alt="Sharia Brotherhood Aurangabad"
-          className="app-logo-full"
-        />
-        {/* Icon-only on mobile */}
-        <img
-          src="/logo-icon.png"
-          alt="SBA"
-          className="app-logo-icon"
-        />
-      </Link>
+      <a href={isAdmin ? '/admin' : '/dashboard'} className="app-header-logo">
+        <img src="/logo.png" alt="Sharia Brotherhood Aurangabad" />
+      </a>
 
-      {/* NAV LINKS (desktop only) */}
       {showNav && (
         <nav className="app-header-nav">
           {navLinks.map(link => (
