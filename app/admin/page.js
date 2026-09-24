@@ -7,6 +7,7 @@ import BottomNav from '@/app/components/BottomNav';
 import StatCard from '@/app/components/StatCard';
 import TransactionItem from '@/app/components/TransactionItem';
 import Header from '@/app/components/Header';
+import { MoneyBagIcon, LoanIcon, MembersIcon, HistoryIcon } from '@/app/components/Icons';
 
 export default function AdminHome() {
   const router = useRouter();
@@ -209,19 +210,19 @@ export default function AdminHome() {
         </h3>
         <div className="grid grid-4" style={{ marginBottom: '24px' }}>
           <a href="/admin/collect" className="quick-action">
-            <div className="icon">💰</div>
+            <MoneyBagIcon size={28} className="quick-action-svg" />
             <div>Collect</div>
           </a>
           <a href="/admin/loans" className="quick-action">
-            <div className="icon">💵</div>
+            <LoanIcon size={28} className="quick-action-svg" />
             <div>Give Loan</div>
           </a>
           <a href="/admin/members" className="quick-action">
-            <div className="icon">👥</div>
+            <MembersIcon size={28} className="quick-action-svg" />
             <div>Members</div>
           </a>
           <a href="/admin/contributions" className="quick-action">
-            <div className="icon">📜</div>
+            <HistoryIcon size={28} className="quick-action-svg" />
             <div>History</div>
           </a>
         </div>
