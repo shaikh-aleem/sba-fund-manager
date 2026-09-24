@@ -2,16 +2,18 @@
 
 export default function TransactionItem({
   type = 'in',
+  icon,
   title,
   subtitle,
   amount,
   date,
 }) {
+  // Fallback arrow if no icon provided
+  const displayIcon = icon || (type === 'in' ? '↓' : type === 'out' ? '↑' : '•');
+
   return (
     <div className="txn-row">
-      <div className={`txn-icon ${type}`}>
-        <span className="txn-arrow">{type === 'in' ? '↓' : type === 'out' ? '↑' : '•'}</span>
-      </div>
+      <div className={`txn-icon ${type}`}>{displayIcon}</div>
       <div className="txn-info">
         <div className="txn-title">{title}</div>
         {subtitle && <div className="txn-sub">{subtitle}</div>}
