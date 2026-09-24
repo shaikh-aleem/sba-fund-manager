@@ -7,6 +7,7 @@ import BottomNav from '@/app/components/BottomNav';
 import StatCard from '@/app/components/StatCard';
 import TransactionItem from '@/app/components/TransactionItem';
 import Header from '@/app/components/Header';
+import { HomeIcon, HistoryIcon, LoanIcon, ProfileIcon } from '@/app/components/Icons';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -94,7 +95,6 @@ export default function Dashboard() {
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '32px', marginBottom: '4px' }}>📅</div>
               <div style={{ fontSize: '12px', opacity: 0.85, fontWeight: 600 }}>
                 1st – 10th
               </div>
@@ -125,7 +125,7 @@ export default function Dashboard() {
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
           Your Account
         </h3>
-                <div className="grid grid-4" style={{ marginBottom: '24px' }}>
+        <div className="grid grid-4" style={{ marginBottom: '24px' }}>
           <StatCard
             label="Total Paid"
             value={`₹${totalPaid.toLocaleString('en-IN')}`}
@@ -156,7 +156,7 @@ export default function Dashboard() {
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
           Community Fund
         </h3>
-                <div className="grid grid-3" style={{ marginBottom: '24px' }}>
+        <div className="grid grid-3" style={{ marginBottom: '24px' }}>
           <StatCard
             label="Total Fund"
             value={`₹${Number(summary?.current_fund_balance || 0).toLocaleString('en-IN')}`}
@@ -175,11 +175,10 @@ export default function Dashboard() {
         </div>
 
         {/* QUICK ACTIONS */}
-        import { HomeIcon, HistoryIcon, LoanIcon, ProfileIcon } from '@/app/components/Icons';
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
           Quick Actions
         </h3>
-               <div className="grid grid-4" style={{ marginBottom: '24px' }}>
+        <div className="grid grid-4" style={{ marginBottom: '24px' }}>
           <a href="/dashboard#contributions" className="quick-action">
             <HistoryIcon size={28} className="quick-action-svg" />
             <div>History</div>
@@ -221,7 +220,6 @@ export default function Dashboard() {
                 <TransactionItem
                   key={c.id}
                   type="in"
-                  icon="✓"
                   title="Monthly Contribution"
                   subtitle={`${c.receipt_no || 'Receipt'} • ${c.month}`}
                   amount={`+ ₹${Number(c.amount).toLocaleString('en-IN')}`}
@@ -242,7 +240,6 @@ export default function Dashboard() {
               <TransactionItem
                 key={l.id}
                 type={l.status === 'active' ? 'out' : 'gold'}
-                icon={l.status === 'active' ? '💵' : '✓'}
                 title={`Loan ${l.loan_code}`}
                 subtitle={`${l.paid_emis}/${l.total_emis} EMIs paid`}
                 amount={`₹${Number(l.outstanding).toLocaleString('en-IN')} left`}
