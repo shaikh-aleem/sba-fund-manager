@@ -1,6 +1,6 @@
 'use client';
 
-export default function Header({ user, showNav = false }) {
+export default function Header({ user, showNav = false, logo = '/logo.png' }) {
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   const handleLogout = () => {
@@ -26,7 +26,7 @@ export default function Header({ user, showNav = false }) {
   return (
     <header className="app-header">
       <a href={isAdmin ? '/admin' : '/dashboard'} className="app-header-logo">
-        <img src="/logo.png" alt="Sharia Brotherhood Aurangabad" />
+        <img src={logo} alt="Sharia Brotherhood Aurangabad" />
       </a>
 
       {showNav && (
