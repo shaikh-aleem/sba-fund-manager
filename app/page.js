@@ -23,7 +23,7 @@ export default function Home() {
 
   return (
     <>
-      <Header user={user} showNav={false} />
+      <Header user={user} showNav={false} logo="/logo-white.png" />
 
       <div className="container" style={{ paddingTop: '30px' }}>
         {/* HERO */}
@@ -48,25 +48,6 @@ export default function Home() {
             {user ? 'Go to Dashboard →' : 'Login / Register →'}
           </a>
         </div>
-
-        {/* LIVE STATS 
-        <div className="grid grid-3" style={{ marginTop: '30px' }}>
-          <div className="card" style={{ textAlign: 'center', padding: '28px 20px' }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>👥</div>
-            <div className="stat-label">Active Members</div>
-            <div className="stat-value">{summary?.total_active_members || 0}</div>
-          </div>
-          <div className="card" style={{ textAlign: 'center', padding: '28px 20px' }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>💰</div>
-            <div className="stat-label">Total Fund</div>
-            <div className="stat-value">₹{Number(summary?.current_fund_balance || 0).toLocaleString('en-IN')}</div>
-          </div>
-          <div className="card" style={{ textAlign: 'center', padding: '28px 20px' }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>📊</div>
-            <div className="stat-label">Loans Outstanding</div>
-            <div className="stat-value">₹{Number(summary?.total_outstanding || 0).toLocaleString('en-IN')}</div>
-          </div>
-        </div>*/}
 
         {/* HOW IT WORKS */}
         <div className="card" style={{ marginTop: '30px' }}>
