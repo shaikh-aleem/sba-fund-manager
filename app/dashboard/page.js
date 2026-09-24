@@ -125,33 +125,29 @@ export default function Dashboard() {
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
           Your Account
         </h3>
-        <div className="grid grid-4" style={{ marginBottom: '24px' }}>
+                <div className="grid grid-4" style={{ marginBottom: '24px' }}>
           <StatCard
             label="Total Paid"
             value={`₹${totalPaid.toLocaleString('en-IN')}`}
             sub="Since joining"
-            icon="💰"
             variant="primary"
           />
           <StatCard
             label="Reserve (10%)"
             value={`₹${reserve.toLocaleString('en-IN')}`}
             sub="For member safety"
-            icon="🛡️"
             variant="gold"
           />
           <StatCard
             label="My Loans"
             value={activeLoan ? `₹${Number(activeLoan.outstanding).toLocaleString('en-IN')}` : '₹0'}
             sub={activeLoan ? 'Outstanding' : 'No active loan'}
-            icon="💵"
             variant={activeLoan ? 'danger' : 'success'}
           />
           <StatCard
             label="Months Paid"
             value={myContributions.length}
             sub="Total contributions"
-            icon="📋"
             variant="success"
           />
         </div>
@@ -160,47 +156,45 @@ export default function Dashboard() {
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
           Community Fund
         </h3>
-        <div className="grid grid-3" style={{ marginBottom: '24px' }}>
+                <div className="grid grid-3" style={{ marginBottom: '24px' }}>
           <StatCard
             label="Total Fund"
             value={`₹${Number(summary?.current_fund_balance || 0).toLocaleString('en-IN')}`}
             sub="Live balance"
-            icon="🏦"
           />
           <StatCard
             label="Active Members"
             value={summary?.total_active_members || 0}
             sub="Contributing now"
-            icon="👥"
           />
           <StatCard
             label="Loans Out"
             value={`₹${Number(summary?.total_outstanding || 0).toLocaleString('en-IN')}`}
             sub="Being repaid"
-            icon="📊"
           />
         </div>
 
         {/* QUICK ACTIONS */}
+        import { HomeIcon, HistoryIcon, LoanIcon, ProfileIcon } from '@/app/components/Icons';
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '12px' }}>
           Quick Actions
         </h3>
-        <div className="grid grid-4" style={{ marginBottom: '24px' }}>
+               <div className="grid grid-4" style={{ marginBottom: '24px' }}>
           <a href="/dashboard#contributions" className="quick-action">
-            <div className="icon">🧾</div>
+            <HistoryIcon size={28} className="quick-action-svg" />
             <div>History</div>
           </a>
           <a href="/dashboard#loans" className="quick-action">
-            <div className="icon">💵</div>
+            <LoanIcon size={28} className="quick-action-svg" />
             <div>My Loans</div>
           </a>
           <a href="/change-password" className="quick-action">
-            <div className="icon">🔑</div>
+            <ProfileIcon size={28} className="quick-action-svg" />
             <div>Password</div>
           </a>
           {isAdmin && (
             <a href="/admin" className="quick-action">
-              <div className="icon">⚙️</div>
+              <HomeIcon size={28} className="quick-action-svg" />
               <div>Admin</div>
             </a>
           )}

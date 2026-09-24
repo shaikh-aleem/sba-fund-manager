@@ -40,7 +40,6 @@ export default function AdminHome() {
     const contribTxns = (contribRes.data || []).map(c => ({
       id: `c-${c.id}`,
       type: 'in',
-      icon: '↓',
       title: 'Member Contribution',
       subtitle: `${c.members?.member_code || ''} - ${c.members?.full_name || 'Member'}`,
       amount: `+ ₹${Number(c.amount).toLocaleString('en-IN')}`,
@@ -51,7 +50,6 @@ export default function AdminHome() {
     const loanTxns = (loanRes.data || []).map(l => ({
       id: `l-${l.id}`,
       type: 'out',
-      icon: '↑',
       title: 'Loan Disbursement',
       subtitle: `${l.members?.member_code || ''} - ${l.members?.full_name || 'Member'}`,
       amount: `- ₹${Number(l.amount).toLocaleString('en-IN')}`,
@@ -118,11 +116,8 @@ export default function AdminHome() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '24px' }}>💰</span>
-                <div style={{ fontSize: '12px', opacity: 0.85, fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                  Total Community Fund
-                </div>
+              <div style={{ fontSize: '12px', opacity: 0.85, fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                Total Community Fund
               </div>
               <div style={{ fontSize: '38px', fontWeight: 800, letterSpacing: '-1px', lineHeight: 1.1 }}>
                 ₹{totalFund.toLocaleString('en-IN')}
@@ -132,7 +127,6 @@ export default function AdminHome() {
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '32px', marginBottom: '4px' }}>👥</div>
               <div style={{ fontSize: '20px', fontWeight: 800 }}>
                 {summary?.total_active_members || 0}
               </div>
@@ -146,7 +140,6 @@ export default function AdminHome() {
             label="Reserve (10%)"
             value={`₹${reserve.toLocaleString('en-IN')}`}
             sub="For member safety"
-            icon="🛡️"
             variant="gold"
             compact
           />
@@ -154,14 +147,12 @@ export default function AdminHome() {
             label="Available Fund"
             value={`₹${available.toLocaleString('en-IN')}`}
             sub="For loans"
-            icon="💵"
             compact
           />
           <StatCard
             label="Active Loans"
             value={summary?.total_outstanding ? Math.ceil(Number(summary.total_outstanding) / 5000) : 0}
             sub={`₹${Number(summary?.total_outstanding || 0).toLocaleString('en-IN')}`}
-            icon="📊"
             variant="danger"
             compact
           />
@@ -169,7 +160,6 @@ export default function AdminHome() {
             label="Pending"
             value={summary?.pending_registrations || 0}
             sub="Approvals"
-            icon="⏳"
             variant={pending.length > 0 ? 'danger' : 'success'}
             compact
           />
@@ -187,7 +177,6 @@ export default function AdminHome() {
             marginBottom: '20px',
           }}
         >
-          <div style={{ fontSize: '28px' }}>📅</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '13px', fontWeight: 700, color: '#8a6d0f', marginBottom: '2px' }}>
               Next Collection Window
@@ -231,7 +220,7 @@ export default function AdminHome() {
           <div className="card" style={{ marginBottom: '16px', borderLeft: '4px solid var(--warning)' }}>
             <div className="flex-between mb-md">
               <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--warning)' }}>
-                ⏳ Pending Approvals ({pending.length})
+                Pending Approvals ({pending.length})
               </h3>
             </div>
             {pending.map(p => (
@@ -240,11 +229,10 @@ export default function AdminHome() {
                 className="txn-row"
                 style={{ flexWrap: 'wrap' }}
               >
-                <div className="txn-icon gold">👤</div>
                 <div className="txn-info">
                   <div className="txn-title">{p.full_name}</div>
                   <div className="txn-sub">
-                    📱 {p.mobile} • Applied {new Date(p.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                    {p.mobile} • Applied {new Date(p.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '6px' }}>
@@ -253,14 +241,14 @@ export default function AdminHome() {
                     style={{ padding: '6px 12px', fontSize: '12px', minHeight: 'auto' }}
                     onClick={() => approveMember(p.id)}
                   >
-                    ✓ Approve
+                    Approve
                   </button>
                   <button
                     className="btn btn-secondary"
                     style={{ padding: '6px 12px', fontSize: '12px', minHeight: 'auto', color: 'var(--danger)', borderColor: 'var(--danger)' }}
                     onClick={() => rejectMember(p.id)}
                   >
-                    ✕
+                    Reject
                   </button>
                 </div>
               </div>
@@ -288,7 +276,6 @@ export default function AdminHome() {
                 <TransactionItem
                   key={t.id}
                   type={t.type}
-                  icon={t.icon}
                   title={t.title}
                   subtitle={t.subtitle}
                   amount={t.amount}

@@ -5,7 +5,7 @@ export default function StatCard({
   value,
   sub,
   icon,
-  variant = 'default', // 'default' | 'primary' | 'gold' | 'success' | 'danger'
+  variant = 'default',
   compact = false,
 }) {
   return (
