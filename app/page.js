@@ -49,7 +49,7 @@ export default function Home() {
           </a>
         </div>
 
-        {/* LIVE STATS */}
+        {/* LIVE STATS 
         <div className="grid grid-3" style={{ marginTop: '30px' }}>
           <div className="card" style={{ textAlign: 'center', padding: '28px 20px' }}>
             <div style={{ fontSize: '36px', marginBottom: '8px' }}>👥</div>
@@ -66,7 +66,7 @@ export default function Home() {
             <div className="stat-label">Loans Outstanding</div>
             <div className="stat-value">₹{Number(summary?.total_outstanding || 0).toLocaleString('en-IN')}</div>
           </div>
-        </div>
+        </div>*/}
 
         {/* HOW IT WORKS */}
         <div className="card" style={{ marginTop: '30px' }}>
