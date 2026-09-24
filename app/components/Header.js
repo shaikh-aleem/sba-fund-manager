@@ -1,6 +1,6 @@
 'use client';
 
-export default function Header({ user, showNav = false, logo = '/logo.png' }) {
+export default function Header({ user, showNav = false, logo = '/logo-white.png' }) {
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   const handleLogout = () => {
